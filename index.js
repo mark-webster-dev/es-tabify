@@ -61,20 +61,23 @@ function collectBucket(node, stack) {
             }
 
             if (Array.isArray(value)) {
-                return extractTree(value, stack.push(key));
+                stack.push(key)
+                return extractTree(value, stack);
             }
 
             // Here we are sure to have an object
             if (key === "buckets" && Object.keys(value).length > 1)
             {
-                return extractBuckets(value, stack.push(key));
+                stack.push(key);
+                return extractBuckets(value, stack);
             }
 
-            return collectBucket(value, stack.push(key));
+            stack.push(key)
+            return collectBucket(value, stack);
         }
 
         if (key === "value" && typeof value !== "object" && stack.length === 1) {
-            t = stack[0]
+            t = [stack[0]]
             collectedObject = collectBucket({t: value});
             node = collectedObject;
         }
@@ -112,7 +115,8 @@ function extractTree(buckets, stack) {
                 if("value" in value){
                     value = value.value;
                 } else {
-                    value = collectBucket(value, stack.push(key));
+                    stack.push(key)
+                    value = collectBucket(value, stack);
                 }
             }
 
